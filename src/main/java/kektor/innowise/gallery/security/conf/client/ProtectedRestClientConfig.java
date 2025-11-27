@@ -1,22 +1,22 @@
 package kektor.innowise.gallery.security.conf.client;
 
-import kektor.innowise.gallery.security.UserPrincipal;
 import kektor.innowise.gallery.security.conf.GallerySecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.RestClient;
 
-import static kektor.innowise.gallery.security.HeadersAuthenticationFilter.EMAIL_HEADER;
-import static kektor.innowise.gallery.security.HeadersAuthenticationFilter.USERNAME_HEADER;
-import static kektor.innowise.gallery.security.HeadersAuthenticationFilter.USER_ID_HEADER;
+import static kektor.innowise.gallery.security.HeadersAuthenticationFilter.SYSTEM_INTERNAL_HEADER;
 
 @Configuration
 public class ProtectedRestClientConfig {
+
+    @Value("${spring.application.name}")
+    String serviceName;
 
     private final GallerySecurityProperties.ProtectedServices protectedServices;
 
@@ -31,7 +31,7 @@ public class ProtectedRestClientConfig {
     public RestClient userRestClient() {
         return RestClient.builder()
                 .baseUrl(protectedServices.userServiceUrl())
-                .requestInitializer(this::addAuthHeaders)
+                .requestInitializer(this::addInternalAuthHeaders)
                 .build();
     }
 
@@ -41,7 +41,7 @@ public class ProtectedRestClientConfig {
     public RestClient authenticationRestClient() {
         return RestClient.builder()
                 .baseUrl(protectedServices.authenticationServiceUrl())
-                .requestInitializer(this::addAuthHeaders)
+                .requestInitializer(this::addInternalAuthHeaders)
                 .build();
     }
 
@@ -51,7 +51,7 @@ public class ProtectedRestClientConfig {
     public RestClient imageRestClient() {
         return RestClient.builder()
                 .baseUrl(protectedServices.imageServiceUrl())
-                .requestInitializer(this::addAuthHeaders)
+                .requestInitializer(this::addInternalAuthHeaders)
                 .build();
     }
 
@@ -61,20 +61,13 @@ public class ProtectedRestClientConfig {
     public RestClient commentRestClient() {
         return RestClient.builder()
                 .baseUrl(protectedServices.commentServiceUrl())
-                .requestInitializer(this::addAuthHeaders)
+                .requestInitializer(this::addInternalAuthHeaders)
                 .build();
     }
 
-    private void addAuthHeaders(ClientHttpRequest request) {
+    private void addInternalAuthHeaders(ClientHttpRequest request) {
         HttpHeaders headers = request.getHeaders();
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() &&
-                authentication.getPrincipal() instanceof UserPrincipal(Long id, String username, String email)) {
-            headers.add(USER_ID_HEADER, id.toString());
-            headers.add(USERNAME_HEADER, username);
-            headers.add(EMAIL_HEADER, email);
-        }
+        headers.add(SYSTEM_INTERNAL_HEADER, serviceName);
     }
-
 
 }
