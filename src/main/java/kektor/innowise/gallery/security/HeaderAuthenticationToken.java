@@ -9,7 +9,7 @@ import java.util.List;
 
 public class HeaderAuthenticationToken extends AbstractAuthenticationToken {
 
-    private static final GrantedAuthority SYSTEM_AUTHORITY = new SimpleGrantedAuthority("SYSTEM");
+    public static final GrantedAuthority SYSTEM_AUTHORITY = new SimpleGrantedAuthority("SYSTEM");
 
     private final Object principal;
 

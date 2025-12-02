@@ -3,6 +3,7 @@ package kektor.innowise.gallery.security.conf;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.HttpMethod;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +13,15 @@ import java.util.List;
 @ConfigurationProperties("gallery.security")
 public class GallerySecurityProperties {
 
-    List<String> openEndpoints = Collections.emptyList();
     ProtectedServices protectedServices;
+    List<Endpoint> openEndpoints = Collections.emptyList();
+    List<Endpoint> internalEndpoints = Collections.emptyList();
+
+    public record Endpoint(
+            HttpMethod method,
+            String path
+    ){
+    }
 
     public record ProtectedServices(
             String userServiceUrl,
