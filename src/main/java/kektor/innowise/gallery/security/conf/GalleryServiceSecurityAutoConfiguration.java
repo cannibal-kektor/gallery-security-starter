@@ -44,6 +44,8 @@ public class GalleryServiceSecurityAutoConfiguration {
                                                    Environment env) throws Exception {
         HttpSecurity httpSecurity = http
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/actuator/health/**")
+                        .permitAll()
                         .requestMatchers(obtainRequestMatchers(galleryProperties.getOpenEndpoints()))
                         .permitAll()
                         .requestMatchers(obtainRequestMatchers(galleryProperties.getInternalEndpoints()))
