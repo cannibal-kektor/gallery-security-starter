@@ -1,1 +1,2 @@
-# Gallery Security Starter
+# Gallery Security Spring Boot starter
+To ensure DRY principles, I developed a **shared Spring Boot Starter**. It automatically configures Spring Security to validate internal identity headers injected by the API Gateway, securing all backend communication.
